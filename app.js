@@ -714,7 +714,7 @@ class GitHubStarsGraph {
         const linkDistance = isMobile ? 120 : isTablet ? 140 : 160;
 
         this.simulation = d3.forceSimulation()
-            .force('link', d3.forceLink().id(d => d.id).distance(linkDistance).strength(0.05))
+            .force('link', d3.forceLink().id(d => d.id).distance(linkDistance).strength(d => 0.02 + (d.sharedCount || 1) * 0.018))
             .force('charge', d3.forceManyBody().strength(chargeStrength).distanceMax(chargeDistMax))
             .force('center', d3.forceCenter(this.width / 2, this.height / 2).strength(0.08))
             .force('collision', d3.forceCollide().radius(collideRadius).strength(0.95))
@@ -1114,8 +1114,8 @@ class GitHubStarsGraph {
             .enter().append('line')
             .attr('class', 'link')
             .attr('stroke', '#ffffff')
-            .attr('stroke-opacity', this.currentFilters.preset === 'sample' ? 0.08 : 0.11)
-            .attr('stroke-width', this.currentFilters.preset === 'sample' ? 1 : 1.2);
+            .attr('stroke-width', d => 0.6 + (d.sharedCount || 1) * 0.6)
+            .attr('stroke-opacity', d => 0.06 + (d.sharedCount || 1) * 0.035);
         
         // Identify top 10 repos by stars
         const top10Repos = [...this.filteredRepositories]
@@ -1315,38 +1315,23 @@ class GitHubStarsGraph {
     
     createIntelligentLinks() {
         const links = [];
+        const repos = this.filteredRepositories;
         
-        // Group repositories by category for better clustering
-        const categoryGroups = d3.group(this.filteredRepositories, d => this.getRepoCategory(d));
-        
-        // Create links within categories (for clustering)
-        categoryGroups.forEach(repos => {
-            // Sort alphabetically
-            repos.sort((a, b) => a.name.localeCompare(b.name));
-
-            const maxSourceNodes = this.currentFilters.preset === 'sample' ? 6 : 12;
-            const neighbors = this.currentFilters.preset === 'sample' ? 1 : 2;
-            for (let i = 0; i < repos.length && i < maxSourceNodes; i++) {
-                for (let j = i + 1; j < Math.min(repos.length, i + 1 + neighbors); j++) {
+        for (let i = 0; i < repos.length; i++) {
+            for (let j = i + 1; j < repos.length; j++) {
+                const a = repos[i];
+                const b = repos[j];
+                if (!a.topics || !b.topics) continue;
+                const shared = a.topics.filter(t => b.topics.includes(t));
+                if (shared.length >= 2) {
                     links.push({
-                        source: repos[i].id,
-                        target: repos[j].id
+                        source: a.id,
+                        target: b.id,
+                        sharedTopics: shared,
+                        sharedCount: shared.length
                     });
                 }
             }
-        });
-        
-        // Add some cross-category links for popular repositories
-        const popularRepos = this.filteredRepositories
-            .filter(repo => false)
-            .sort((a, b) => a.name.localeCompare(b.name))
-            .slice(0, this.currentFilters.preset === 'sample' ? 5 : 8);
-        
-        for (let i = 0; i < popularRepos.length - 1; i++) {
-            links.push({
-                source: popularRepos[i].id,
-                target: popularRepos[i + 1].id
-            });
         }
         
         return links;
