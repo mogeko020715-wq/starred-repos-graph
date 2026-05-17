@@ -714,11 +714,11 @@ class GitHubStarsGraph {
         // Responsive force parameters: mobile > tablet > desktop
         const isMobile = this.isMobileViewport();
         const isTablet = window.innerWidth >= 768 && window.innerWidth <= 1023;
-        const chargeStrength = isMobile ? -1000 : isTablet ? -600 : -400;
-        const chargeDistMax = isMobile ? 800 : isTablet ? 600 : 450;
-        const collideExtra = isMobile ? 18 : isTablet ? 12 : 8;
+        const chargeStrength = isMobile ? -1400 : isTablet ? -900 : -600;
+        const chargeDistMax = isMobile ? 1100 : isTablet ? 850 : 650;
+        const collideExtra = isMobile ? 28 : isTablet ? 20 : 15;
         const collideRadius = d => this.getNodeRadius(d) + collideExtra;
-        const linkDistance = isMobile ? 120 : isTablet ? 140 : 160;
+        const linkDistance = isMobile ? 160 : isTablet ? 190 : 220;
 
         this.simulation = d3.forceSimulation()
             .force('link', d3.forceLink().id(d => d.id).distance(linkDistance).strength(d => 0.02 + (d.sharedCount || 1) * 0.018))
