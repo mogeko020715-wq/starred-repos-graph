@@ -11,168 +11,55 @@ class GitHubStarsGraph {
         this.dataLastUpdated = null; // ISO timestamp when data was last updated
         this.dataSource = null; // 'cached' (Actions JSON) | 'live' (API)
         this.config = {
-            appName: 'GitHub Stars Explorer',
-            defaultUsername: 'niranjanxprt',
-            repositoryUrl: 'https://github.com/niranjanxprt/starred-repos-graph',
-            workflowUrl: 'https://github.com/niranjanxprt/starred-repos-graph/actions/workflows/update-data.yml',
-            staleHours: 24
+            appName: '麦的精神地图',
+            defaultUsername: 'mogeko020715-wq',
+            repositoryUrl: 'https://github.com/mogeko020715-wq/starred-repos-graph',
+            workflowUrl: 'https://github.com/mogeko020715-wq/starred-repos-graph/actions/workflows/update-data.yml',
+            staleHours: 720
         };
         
-        // Enhanced category definitions with weighted keyword scoring
-        // Format: { keyword: weight } where higher weight = stronger indicator
+        // Simplified categories for Spirit Map
         this.categories = {
-            'ai-ml': {
-                strong: ['tensorflow', 'pytorch', 'huggingface', 'langchain', 'openai', 'anthropic', 'transformers', 'llm', 'gpt', 'chatgpt', 'claude', 'gemini', 'llama', 'bert', 'neural-network', 'deep-learning', 'machine-learning', 'prompt-engineering', 'prompt-optimization', 'agent-framework', 'agentic-ai', 'deepagents', 'dspy', 'reinforcement-learning'],
-                medium: ['ai', 'ml', 'rag', 'embedding', 'model-training', 'inference', 'nlp', 'computer-vision', 'generative', 'diffusion', 'ai-powered', 'ai-agent', 'ai-assistant', 'llm-ops', 'model-context-protocol', 'ai-native'],
-                weak: ['agent', 'semantic', 'vector', 'optimization', 'prompt']
-            },
-            'cloud': {
-                strong: ['aws', 'azure', 'gcp', 'google-cloud', 'cloud-native', 'eks', 'aks', 'gke', 'cloudformation', 'terraform', 'pulumi', 'cdn', 'cloudflare'],
-                medium: ['cloud', 'infrastructure-as-code', 'iac', 'aws-cdk', 'serverless', 'lambda', 'cloud-functions', 'edge-computing', 'esm'],
-                weak: ['infrastructure', 'deployment', 'hosting']
-            },
-            'devops': {
-                strong: ['kubernetes', 'k8s', 'docker', 'helm', 'argocd', 'gitlab-ci', 'github-actions', 'circleci', 'jenkins', 'ansible', 'vagrant', 'backup-automation', 'prometheus-exporter'],
-                medium: ['ci-cd', 'continuous-integration', 'continuous-deployment', 'devops', 'gitops', 'containerization', 'orchestration', 'self-hosted', 'homelab', 'sre', 'site-reliability', 'backup'],
-                weak: ['deployment', 'pipeline', 'automation', 'ops', 'self-hosters']
-            },
-            'web-dev': {
-                strong: ['react', 'nextjs', 'next.js', 'vue', 'vuejs', 'angular', 'svelte', 'remix', 'astro', 'browser-engine', 'web-browser', 'chromium', 'webkit', 'static-site-generator', 'ssg'],
-                medium: ['frontend', 'backend', 'fullstack', 'web-framework', 'express', 'fastify', 'nestjs', 'tailwind', 'css', 'browser', 'web-development', 'obsidian-md', 'markdown-editor', 'nobuild'],
-                weak: ['web', 'html', 'javascript', 'typescript', 'markdown', 'mdx']
-            },
-            'mobile': {
-                strong: ['react-native', 'flutter', 'swift', 'kotlin', 'swiftui', 'jetpack-compose', 'expo'],
-                medium: ['ios', 'android', 'mobile-development', 'mobile-app', 'xamarin', 'ionic'],
-                weak: ['mobile']
-            },
-            'data': {
-                strong: ['postgresql', 'mongodb', 'redis', 'elasticsearch', 'cassandra', 'dynamodb', 'apache-spark', 'apache-kafka', 'apache-airflow', 'gpu-programming', 'cuda-programming', 'gpu-engineering'],
-                medium: ['database', 'data-engineering', 'etl', 'data-pipeline', 'data-warehouse', 'bigquery', 'snowflake', 'kernels', 'gpu', 'cuda'],
-                weak: ['sql', 'nosql', 'analytics', 'data', 'pandas', 'numpy']
-            },
-            'monitoring': {
-                strong: ['prometheus', 'grafana', 'datadog', 'new-relic', 'elasticsearch', 'kibana', 'jaeger', 'zipkin', 'web-analytics', 'google-analytics', 'mixpanel', 'amplitude', 'umami'],
-                medium: ['observability', 'monitoring', 'logging', 'tracing', 'metrics', 'apm', 'alerting', 'analytics', 'product-analytics', 'audience-segmentation', 'cohort-analysis', 'user-journey'],
-                weak: ['logs', 'telemetry', 'statistics', 'tracking']
-            },
-            'testing': {
-                strong: ['jest', 'pytest', 'cypress', 'selenium', 'playwright', 'junit', 'testng', 'mocha'],
-                medium: ['testing', 'test-automation', 'unit-testing', 'integration-testing', 'e2e-testing', 'tdd', 'bdd'],
-                weak: ['test', 'qa', 'quality-assurance']
-            },
-            'python': {
-                strong: ['django', 'flask', 'fastapi', 'pandas', 'numpy', 'scipy', 'scikit-learn'],
-                medium: ['python', 'python3', 'pythonic'],
-                weak: ['py']
-            },
-            'tools': {
-                strong: ['vscode', 'vim', 'neovim', 'cli-tool', 'command-line-tool', 'browser-extension', 'chrome-extension', 'firefox-addon', 'text-editor', 'productivity-tool'],
-                medium: ['cli', 'command-line', 'terminal', 'shell', 'bash', 'developer-tools', 'chrome', 'firefox', 'safari', 'edge', 'opera', 'code-review', 'pull-request-review', 'github-tool', 'self-hosted-tools'],
-                weak: ['tool', 'utility', 'productivity', 'extension', 'addon', 'plugin']
-            },
-            'security': {
-                strong: ['oauth', 'jwt', 'authentication', 'authorization', 'encryption', 'vulnerability-scanner', 'penetration-testing', 'soc2', 'iso27001', 'gdpr', 'hipaa', 'compliance'],
-                medium: ['security', 'cybersecurity', 'infosec', 'secure', 'privacy', 'cryptography', 'grc', 'governance', 'risk-management', 'compliance-automation', 'iso27701', 'iso42001'],
-                weak: ['auth', 'ssl', 'tls', 'audit']
-            },
-            'api': {
-                strong: ['graphql', 'rest-api', 'api-gateway', 'grpc', 'swagger', 'openapi'],
-                medium: ['api', 'restful', 'microservices', 'api-client', 'sdk'],
-                weak: ['endpoint', 'webhook']
-            },
-            'learning': {
-                strong: ['tutorial', 'course', 'learning-resources', 'educational', 'coding-interview', 'examples', 'awesome-list', 'curated-list', 'learning-path', 'study-guide', 'cheat-sheet'],
-                medium: ['learning', 'education', 'guide', 'handbook', 'interview-prep', 'awesome', 'resources', 'list', 'collection', 'curated', 'flashcard', 'spaced-repetition'],
-                weak: ['documentation', 'book', 'study', 'reference']
-            },
-            'ui-ux': {
-                strong: ['design-system', 'ui-components', 'component-library', 'tailwindcss', 'material-ui', 'shadcn', 'gui-framework', 'gpui', 'uikit', 'swiftui', 'jetpack-compose'],
-                medium: ['ui', 'ux', 'design', 'user-interface', 'frontend-framework', 'desktop-application', 'canvas', 'graphics', 'pixel-art', 'isometric'],
-                weak: ['theme', 'icon', 'animation', 'visual']
-            },
-            'blockchain': {
-                strong: ['ethereum', 'solidity', 'web3', 'smart-contract', 'defi', 'nft'],
-                medium: ['blockchain', 'cryptocurrency', 'bitcoin', 'dapp'],
-                weak: ['crypto']
-            },
-            'game-dev': {
-                strong: ['unity', 'unreal', 'godot', 'game-engine'],
-                medium: ['game-development', 'gamedev', 'gaming'],
-                weak: ['game', '3d', 'physics-engine']
-            },
-            'mcp': {
-                strong: ['mcp', 'model-context-protocol', 'claude-desktop'],
-                medium: ['anthropic'],
-                weak: []
-            },
-            'networking': {
-                strong: ['networking', 'network-programming', 'tcp-ip', 'http', 'dns', 'load-balancer'],
-                medium: ['protocol', 'socket', 'websocket', 'network'],
-                weak: []
-            },
-            'system-design': {
-                strong: ['system-design', 'system-architecture', 'distributed-systems', 'distributed-system', 'scalability', 'high-availability', 'microservices-architecture', 'system-design-interview', 'architecture-patterns', 'design-patterns', 'software-architecture'],
-                medium: ['architecture', 'scalable', 'distributed', 'high-performance', 'load-balancing', 'caching', 'message-queue', 'event-driven', 'microservices-pattern', 'architectural'],
-                weak: ['pattern', 'architecture-diagram', 'system']
-            },
-            'other': {}
+            'game': { strong: ['游戏'], medium: [], weak: [] },
+            'book': { strong: ['书籍'], medium: [], weak: [] },
+            'movie': { strong: ['电影'], medium: [], weak: [] },
+            'series': { strong: ['剧集'], medium: [], weak: [] },
+            'music': { strong: ['音乐'], medium: [], weak: [] },
+            'musical': { strong: ['音乐剧'], medium: [], weak: [] },
+            'anime': { strong: ['动漫'], medium: [], weak: [] },
+            'insight': { strong: ['洞察'], medium: [], weak: [] },
+            'philosopher': { strong: ['哲学家'], medium: [], weak: [] },
+            'topic': { strong: ['主题'], medium: [], weak: [] },
+            'other': { strong: [], medium: [], weak: [] }
         };
         
         this.categoryMeta = {
-            'ai-models': { label: 'AI Models', color: '#7c6db2' },
-            'ai-agents': { label: 'AI Agents', color: '#8a5fb0' },
-            'llm-apps': { label: 'LLM Apps', color: '#7161a8' },
-            'rag-search': { label: 'RAG/Search', color: '#5f73a6' },
-            'ai-learning': { label: 'AI Learning', color: '#8f7aaa' },
-            'frontend': { label: 'Frontend', color: '#6d9a85' },
-            'backend-api': { label: 'Backend/API', color: '#5f8f9b' },
-            'full-stack-frameworks': { label: 'Full-stack Frameworks', color: '#74927c' },
-            'developer-tools': { label: 'Developer Tools', color: '#7f8391' },
-            'productivity-apps': { label: 'Productivity Apps', color: '#8b7b8d' },
-            'self-hosted': { label: 'Self-hosted', color: '#7a8f79' },
-            'databases': { label: 'Databases', color: '#597c9d' },
-            'systems-low-level': { label: 'Systems/Low-level', color: '#897b6f' },
-            'career-interview': { label: 'Career/Interview', color: '#8c8870' },
-            'docs-reference': { label: 'Docs/Reference', color: '#879476' },
-            'cloud': { label: 'Cloud', color: '#9d7d5d' },
-            'devops': { label: 'DevOps', color: '#5d8d9d' },
-            'mobile': { label: 'Mobile', color: '#9d6d6d' },
-            'monitoring': { label: 'Monitoring', color: '#9d7d5d' },
-            'testing': { label: 'Testing', color: '#7d9d6d' },
-            'python': { label: 'Python', color: '#9d956d' },
-            'security': { label: 'Security', color: '#8d6d7d' },
-            'ui-ux': { label: 'UI/UX', color: '#9d7d8d' },
-            'blockchain': { label: 'Blockchain', color: '#8d7d6d' },
-            'game-dev': { label: 'Game Dev', color: '#9d8d7d' },
-            'mcp': { label: 'MCP', color: '#7d7d9d' },
-            'networking': { label: 'Networking', color: '#6d8d9d' },
-            'system-design': { label: 'System Design', color: '#7d9d8d' },
-            'other': { label: 'Other', color: '#7d7d8d' }
+            '游戏': { label: '游戏', color: '#8b5cf6' },
+            '书籍': { label: '书籍', color: '#10b981' },
+            '电影': { label: '电影', color: '#f59e0b' },
+            '剧集': { label: '剧集', color: '#f472b6' },
+            '音乐': { label: '音乐', color: '#06b6d4' },
+            '音乐剧': { label: '音乐剧', color: '#ec4899' },
+            '动漫': { label: '动漫', color: '#6366f1' },
+            '洞察': { label: '洞察', color: '#84cc16' },
+            '哲学家': { label: '哲学家', color: '#14b8a6' },
+            '主题': { label: '主题', color: '#ef4444' },
+            '其他': { label: '其他', color: '#7d7d8d' }
         };
 
         // Backward-compatible palette: old category ids plus the new display taxonomy.
         this.categoryColors = {
-            'ai-ml': '#6d5d9a',        // Dark purple
-            'cloud': '#9d7d5d',        // Dusty brown
-            'devops': '#5d8d9d',       // Muted teal
-            'web-dev': '#6d8d7d',      // Muted sage
-            'mobile': '#9d6d6d',       // Muted mauve red
-            'data': '#5d7d9d',         // Deep slate
-            'monitoring': '#9d7d5d',   // Warm taupe
-            'testing': '#7d9d6d',      // Muted green
-            'python': '#9d956d',       // Muted olive
-            'tools': '#7d7d8d',        // Cool gray
-            'security': '#8d6d7d',     // Deep plum
-            'api': '#7d6d8d',          // Muted purple
-            'learning': '#7d9d8d',     // Soft teal-green
-            'ui-ux': '#9d7d8d',        // Muted dusty rose
-            'blockchain': '#8d7d6d',   // Warm taupe
-            'game-dev': '#9d8d7d',     // Soft tan
-            'mcp': '#7d7d9d',          // Periwinkle
-            'networking': '#6d8d9d',   // Slate blue
-            'system-design': '#7d9d8d', // Blue-green
-            'other': '#7d7d8d'         // Neutral gray
+            'game': '#8b5cf6',
+            'book': '#10b981',
+            'movie': '#f59e0b',
+            'series': '#f472b6',
+            'music': '#06b6d4',
+            'musical': '#ec4899',
+            'anime': '#6366f1',
+            'insight': '#84cc16',
+            'philosopher': '#14b8a6',
+            'topic': '#ef4444',
+            'other': '#7d7d8d'
         };
         Object.entries(this.categoryMeta).forEach(([category, meta]) => {
             this.categoryColors[category] = meta.color;
@@ -220,14 +107,6 @@ class GitHubStarsGraph {
             });
         }
         
-        // Stars filters
-        document.querySelectorAll('#stars-filters .filter-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                document.querySelectorAll('#stars-filters .filter-btn').forEach(b => b.classList.remove('active'));
-                e.currentTarget.classList.add('active');
-                this.currentFilters.stars = e.target.dataset.stars;
-                this.applyFilters();
-            });
         });
         
         // Window resize
@@ -253,7 +132,7 @@ class GitHubStarsGraph {
         const exportBtn = document.getElementById('export-csv');
         if (exportBtn) {
             exportBtn.addEventListener('click', () => {
-                this.exportRepositoriesCsv();
+                this.exportDataJson();
             });
         }
 
@@ -524,102 +403,24 @@ class GitHubStarsGraph {
     }
     
     async loadRepositories() {
-        const params = new URLSearchParams(window.location.search);
-        const username = params.get('user') || this.config.defaultUsername;
-        
         try {
-            this.updateProgress('Connecting to data source...');
+            this.updateProgress('Loading spirit map data...');
             
-            // Try to load from data file first (if GitHub Actions has run)
-            try {
-                const response = await fetch(`./data/repositories.json?v=${Date.now()}`, { cache: 'no-store' });
-                if (response.ok) {
-                    const data = await response.json();
-                    this.repositories = (data.repositories || []).map(repo => this.normalizeRepository(repo));
-                    this.dataLastUpdated = data.lastUpdated || null;
-                    this.dataSource = 'cached';
-                    console.log(`Loaded ${this.repositories.length} repositories from data file`);
-                    this.updateStats();
-                    return;
-                }
-            } catch (e) {
-                console.log('Data file not found, fetching from GitHub API...');
+            const response = await fetch(`./data/repositories.json?v=${Date.now()}`, { cache: 'no-store' });
+            if (response.ok) {
+                const data = await response.json();
+                this.repositories = (data.repositories || []).map(repo => this.normalizeRepository(repo));
+                this.dataLastUpdated = data.lastUpdated || null;
+                this.dataSource = 'cached';
+                console.log(`Loaded ${this.repositories.length} nodes from spirit map data`);
+                this.updateStats();
+                return;
             }
             
-            // Fallback: Fetch directly from GitHub API
-            let page = 1;
-            const perPage = 100;
-            this.repositories = [];
-            this.dataSource = 'live';
-            
-            this.updateProgress('Fetching repository data from GitHub API...');
-            
-            while (page <= 8) { // Maximum 8 pages to get ~700+ repos
-                try {
-                    const url = `https://api.github.com/users/${username}/starred?per_page=${perPage}&page=${page}`;
-                    
-                    const response = await fetch(url);
-                    
-                    if (!response.ok) {
-                        if (response.status === 403) {
-                            throw new Error('GitHub API rate limit exceeded. The app will use cached data or try again later.');
-                        }
-                        throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
-                    }
-                    
-                    const repos = await response.json();
-                    
-                    if (repos.length === 0) break;
-                    
-                    const processedRepos = repos.map(repo => ({
-                        id: repo.id,
-                        name: repo.name,
-                        owner: repo.owner.login,
-                        fullName: repo.full_name,
-                        description: repo.description || '',
-                        url: repo.html_url,
-                        language: repo.language || 'Unknown',
-                        stars: repo.stargazers_count,
-                        forks: repo.forks_count,
-                        updatedAt: repo.updated_at,
-                        topics: repo.topics || [],
-                        category: this.categorizeRepo(repo)
-                    })).map(repo => this.normalizeRepository(repo));
-                    
-                    this.repositories = this.repositories.concat(processedRepos);
-                    
-                    this.updateProgress(`Loading repositories... ${this.repositories.length} found`);
-                    
-                    page++;
-                    
-                    // Small delay to be nice to GitHub API
-                    await new Promise(resolve => setTimeout(resolve, 200));
-                    
-                } catch (error) {
-                    console.error(`Error fetching page ${page}:`, error);
-                    if (this.repositories.length === 0) {
-                        throw error;
-                    }
-                    break;
-                }
-            }
-            
-            console.log(`Successfully loaded ${this.repositories.length} repositories`);
-            // Mark last updated from live API fetch time if file wasn't used
-            if (!this.dataLastUpdated) {
-                this.dataLastUpdated = new Date().toISOString();
-            }
-            this.updateStats();
-            
+            throw new Error('Failed to load spirit map data');
         } catch (error) {
-            console.error('Error loading repositories:', error);
-            
-            // Show error but try to continue with sample data for demo
-            this.showError(`Error loading data: ${error.message}. Please refresh to try again.`);
-            
-            // Set empty repositories to show error state
-            this.repositories = [];
-            this.updateStats();
+            console.error('Error loading data:', error);
+            this.showError(`Failed to load: ${error.message}`);
         }
     }
 
@@ -1025,12 +826,9 @@ class GitHubStarsGraph {
     }
 
     getNodeRadius(d) {
-        const stars = d.stars || 1;
+        const nodeSize = 12;
         const isMobile = this.isMobileViewport();
-        const base = Math.log10(stars + 1) * (isMobile ? 4.2 : 6) + (isMobile ? 6 : 7);
-        if (stars >= 100000) return Math.min(isMobile ? 24 : 38, base);
-        if (stars >= 10000)  return Math.min(isMobile ? 20 : 30, base);
-        if (stars >= 1000)   return Math.min(isMobile ? 16 : 22, base);
+        return nodeSize;
         return Math.min(isMobile ? 12 : 16, Math.max(isMobile ? 7 : 6, base));
     }
     
@@ -1059,7 +857,7 @@ class GitHubStarsGraph {
             languageContainer.innerHTML = '';
             const languageCounts = new Map();
             this.repositories.forEach(repo => {
-                if (repo.language && repo.language !== 'Unknown') {
+                if (repo.language && repo.language !== '未知') {
                     languageCounts.set(repo.language, (languageCounts.get(repo.language) || 0) + 1);
                 }
             });
@@ -1206,7 +1004,7 @@ class GitHubStarsGraph {
             }
             
             // Stars filter
-            if (this.currentFilters.stars !== 'all') {
+            if (false) { // stars filter removed
                 const minStars = parseInt(this.currentFilters.stars);
                 if (repo.stars < minStars) return false;
             }
@@ -1215,15 +1013,15 @@ class GitHubStarsGraph {
         });
 
         if (this.currentFilters.search) {
-            results = results.sort((a, b) => (b._searchScore - a._searchScore) || ((b.stars || 0) - (a.stars || 0)));
+            results = results.sort((a, b) => (b._searchScore - a._searchScore));
         } else if (this.currentFilters.preset === 'sample') {
             results = this.pickBalancedSample(results, this.isMobileViewport() ? 32 : 48);
         } else if (this.currentFilters.preset === 'curated') {
             results = results
-                .sort((a, b) => (b.stars || 0) - (a.stars || 0))
+                .sort((a, b) => a.name.localeCompare(b.name))
                 .slice(0, this.isMobileViewport() ? 90 : 140);
         } else if (this.currentFilters.preset === 'popular') {
-            results = results.sort((a, b) => (b.stars || 0) - (a.stars || 0));
+            results = results.sort((a, b) => a.name.localeCompare(b.name));
         }
 
         this.filteredRepositories = results;
@@ -1237,7 +1035,7 @@ class GitHubStarsGraph {
         const category = this.getRepoCategory(repo);
         const preset = this.currentFilters.preset;
         if (preset === 'all') return true;
-        if (preset === 'popular') return (repo.stars || 0) >= 50000;
+        if (preset === 'popular') return true; // popularity not applicable
         if (preset === 'learning') return ['ai-learning', 'career-interview', 'docs-reference', 'system-design'].includes(category);
         if (preset === 'ai') return ['ai-models', 'ai-agents', 'llm-apps', 'rag-search', 'ai-learning', 'mcp'].includes(category);
         if (preset === 'sample') return this.getRepoCategory(repo) !== 'other';
@@ -1246,7 +1044,7 @@ class GitHubStarsGraph {
     }
 
     pickBalancedSample(repositories, limit) {
-        const sorted = [...repositories].sort((a, b) => (b.stars || 0) - (a.stars || 0));
+        const sorted = [...repositories].sort((a, b) => a.name.localeCompare(b.name));
         const byCategory = d3.group(sorted, d => this.getRepoCategory(d));
         const selected = [];
         const seen = new Set();
@@ -1271,7 +1069,7 @@ class GitHubStarsGraph {
             }
         }
 
-        return selected.sort((a, b) => (b.stars || 0) - (a.stars || 0));
+        return selected.sort((a, b) => a.name.localeCompare(b.name));
     }
 
     getSearchScore(repo, query) {
@@ -1323,7 +1121,7 @@ class GitHubStarsGraph {
         
         // Identify top 10 repos by stars
         const top10Repos = [...this.filteredRepositories]
-            .sort((a, b) => (b.stars || 0) - (a.stars || 0))
+            .sort((a, b) => a.name.localeCompare(b.name))
             .slice(0, 10)
             .map(d => d.id);
 
@@ -1416,7 +1214,7 @@ class GitHubStarsGraph {
             .enter().append('text')
             .attr('class', 'node-label')
             .text(d => {
-                const name = d.name || d.fullName || 'Unknown';
+                const name = d.name || d.fullName || '未知';
                 const display = String(name);
                 const r = this.getNodeRadius(d);
                 const maxChars = r >= 35 ? 20 : r >= 22 ? 14 : 12;
@@ -1510,7 +1308,7 @@ class GitHubStarsGraph {
             : (this.isMobileViewport() ? 6 : 14);
         const minRadiusForLabel = this.currentFilters.preset === 'sample' ? 28 : 30;
         const topByStars = [...this.filteredRepositories]
-            .sort((a, b) => (b.stars || 0) - (a.stars || 0))
+            .sort((a, b) => a.name.localeCompare(b.name))
             .slice(0, maxLabels);
         const bigBubbles = this.filteredRepositories.filter(d => this.getNodeRadius(d) >= minRadiusForLabel);
         return [...new Map([...topByStars, ...bigBubbles].map(d => [d.id, d])).values()]
@@ -1525,8 +1323,8 @@ class GitHubStarsGraph {
         
         // Create links within categories (for clustering)
         categoryGroups.forEach(repos => {
-            // Sort by stars to connect popular repos
-            repos.sort((a, b) => b.stars - a.stars);
+            // Sort alphabetically
+            repos.sort((a, b) => a.name.localeCompare(b.name));
 
             const maxSourceNodes = this.currentFilters.preset === 'sample' ? 6 : 12;
             const neighbors = this.currentFilters.preset === 'sample' ? 1 : 2;
@@ -1542,8 +1340,8 @@ class GitHubStarsGraph {
         
         // Add some cross-category links for popular repositories
         const popularRepos = this.filteredRepositories
-            .filter(repo => repo.stars > 50000)
-            .sort((a, b) => b.stars - a.stars)
+            .filter(repo => false)
+            .sort((a, b) => a.name.localeCompare(b.name))
             .slice(0, this.currentFilters.preset === 'sample' ? 5 : 8);
         
         for (let i = 0; i < popularRepos.length - 1; i++) {
@@ -1606,24 +1404,22 @@ class GitHubStarsGraph {
         const svgTap = '<svg class="icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2"/><path d="M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 13"/></svg>';
 
         const actionHint = isTouchTap
-            ? `<div class=\"tooltip-tap-hint\">${svgTap} Tap again to open repository</div>`
-            : `<div class=\"tooltip-action\">${svgTap} Click to open repository</div>`;
+            ? `<div class=\"tooltip-tap-hint\">${svgTap} 点击查看详情</div>`
+            : `<div class=\"tooltip-action\">${svgTap} 点击查看详情</div>`;
 
         this.tooltip
             .style('left', leftPos + 'px')
             .style('top', topPos + 'px')
             .style('max-width', tooltipWidth + 'px')
             .html(`
-                <div class=\"tooltip-title\">${d.name || d.fullName || 'Unknown'}</div>
-                <div class=\"tooltip-owner\">by ${d.owner || '—'}</div>
+                <div class=\"tooltip-title\">${d.name || d.fullName || '未知'}</div>
+                <div class=\"tooltip-owner\">${d.owner || '—'}</div>
                 <div class=\"tooltip-category\">${this.getCategoryLabel(this.getRepoCategory(d))}</div>
                 <div class=\"tooltip-meta\">
-                    <div class=\"tooltip-stat\">${svgStar} ${d.stars.toLocaleString()}</div>
-                    <div class=\"tooltip-stat\">${svgFork} ${d.forks.toLocaleString()}</div>
-                    <div class=\"tooltip-stat\">${svgCode} ${d.language}</div>
-                    <div class=\"tooltip-stat\">${svgLink} ${d.fullName}</div>
+                    <div class=\"tooltip-stat\">类型: ${d.language || "未知"}</div>
+                    <div class=\"tooltip-stat\">标签: ${(d.topics || []).slice(0, 4).join(" · ") || "暂无标签"}</div>
                 </div>
-                <div class=\"tooltip-desc\">${d.description || 'No description available'}</div>
+                <div class=\"tooltip-desc\">${d.description || '暂无描述'}</div>
                 ${actionHint}
             `)
             .classed('visible', true);
@@ -1643,7 +1439,7 @@ class GitHubStarsGraph {
             .attr('fill', '#ffffff')
             .attr('font-size', '20px')
             .attr('font-weight', 'bold')
-            .text('No repositories match your current filters');
+            .text('没有匹配当前筛选的节点');
         
         g.append('text')
             .attr('x', this.width / 2)
@@ -1651,7 +1447,7 @@ class GitHubStarsGraph {
             .attr('text-anchor', 'middle')
             .attr('fill', '#ffffff')
             .attr('font-size', '14px')
-            .text('Try adjusting your search criteria or reset filters');
+            .text('请调整筛选条件或重置筛选');
     }
     
     updateStats() {
@@ -1662,7 +1458,7 @@ class GitHubStarsGraph {
         this.animateCounter(visibleEl, this.filteredRepositories.length, true);
 
         const count = this.repositories.length;
-        document.title = `${this.config.appName} - ${count.toLocaleString()} starred repositories`;
+        document.title = `${this.config.appName} - ${count.toLocaleString()} 个节点`;
 
         const titleEl = document.querySelector('.title');
         if (titleEl) {
@@ -1706,7 +1502,7 @@ class GitHubStarsGraph {
         if (!container) return;
 
         const topResults = [...this.filteredRepositories]
-            .sort((a, b) => (b._searchScore - a._searchScore) || ((b.stars || 0) - (a.stars || 0)))
+            .sort((a, b) => (b._searchScore - a._searchScore))
             .slice(0, 8);
 
         if (countEl) {
@@ -1721,7 +1517,7 @@ class GitHubStarsGraph {
         `).join('');
     }
 
-    exportRepositoriesCsv() {
+    exportDataJson() {
         if (!this.repositories.length) return;
 
         const columns = [
@@ -1756,17 +1552,17 @@ class GitHubStarsGraph {
             lastUpdated: this.dataLastUpdated || ''
         }));
 
-        const csv = [
+        const json = [
             columns.join(','),
             ...rows.map(row => columns.map(column => this.escapeCsv(row[column])).join(','))
         ].join('\n');
 
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+        const blob = new Blob([csv], { type: 'application/json;charset=utf-8' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         const date = new Date(this.dataLastUpdated || Date.now()).toISOString().slice(0, 10);
         link.href = url;
-        link.download = `github-stars-explorer-${date}.csv`;
+        link.download = `github-stars-explorer-${date}.json`;
         document.body.appendChild(link);
         link.click();
         link.remove();
