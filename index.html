@@ -1453,31 +1453,31 @@
 
     <div class="controls-panel collapsed" id="controls-panel" role="region" aria-label="Filters">
         <div class="panel-drag-handle" id="controls-drag-handle"></div>
-        <div class="swipe-hint">Swipe down to close</div>
+        <div class="swipe-hint">向下滑动关闭</div>
         <button class="panel-close" id="close-controls" aria-label="Close filters"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
         <div class="control-section">
             <label class="control-label"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg> Explore Preset</label>
-            <div class="filter-grid preset-grid" id="preset-filters" role="group" aria-label="Explore presets">
-                <button class="filter-btn active" data-preset="sample">Sample</button>
-                <button class="filter-btn" data-preset="all">All</button>
-                <button class="filter-btn" data-preset="curated">Curated</button>
-                <button class="filter-btn" data-preset="popular">Popular</button>
-                <button class="filter-btn" data-preset="learning">Learning</button>
+            <div class="filter-grid preset-grid" id="preset-filters" role="group" aria-label="预设视图">
+                <button class="filter-btn active" data-preset="sample">精选</button>
+                <button class="filter-btn" data-preset="all">全部</button>
+                <button class="filter-btn" data-preset="curated">策展</button>
+                <button class="filter-btn" data-preset="popular">热门</button>
+                <button class="filter-btn" data-preset="learning">学习</button>
                 <button class="filter-btn" data-preset="ai">AI</button>
             </div>
         </div>
         <div class="control-section">
-            <label class="control-label"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg> Search Repositories</label>
+            <label class="control-label"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg> 搜索节点</label>
             <div class="search-wrapper" role="search">
                 <input type="text" id="search" class="search-input" placeholder="搜索名称、标签、类型…" aria-label="搜索节点">
-                <button class="search-clear-btn" id="search-clear" aria-label="Clear search"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+                <button class="search-clear-btn" id="search-clear" aria-label="清除搜索"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
             </div>
         </div>
 
         <div class="control-section">
             <div class="results-header">
-                <label class="control-label" style="margin-bottom:0;"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg> Top Matches</label>
-                <span class="result-count-label" id="result-count-label">0 matching</span>
+                <label class="control-label" style="margin-bottom:0;"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg> 匹配结果</label>
+                <span class="result-count-label" id="result-count-label">0 个匹配</span>
             </div>
             <div class="result-list" id="search-results" aria-live="polite"></div>
         </div>
@@ -1493,9 +1493,9 @@
         </div>
     </div>
 
-    <div class="legend-panel collapsed" id="legend-panel" role="region" aria-label="Legend">
+    <div class="legend-panel collapsed" id="legend-panel" role="region" aria-label="图例">
         <div class="panel-drag-handle" id="legend-drag-handle"></div>
-        <div class="swipe-hint">Swipe down to close</div>
+        <div class="swipe-hint">向下滑动关闭</div>
         <button class="panel-close" id="close-legend" aria-label="Close legend"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
         <div class="legend-title"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg> 类型分类</div>
         <div id="legend-items"></div>

@@ -90,7 +90,7 @@ class GitHubStarsGraph {
             this.setupLegend();
             this.applyPreset('sample');
             this.hideLoading();
-            console.log('GitHub Stars Explorer initialized successfully!');
+            console.log('麦的精神地图初始化成功!');
         } catch (error) {
             console.error('Error initializing app:', error);
             this.showError(`Failed to initialize: ${error.message}`);
@@ -524,10 +524,10 @@ class GitHubStarsGraph {
         const topics = (repo.topics || []).map(t => t.toLowerCase());
         const language = (repo.language || '').toLowerCase();
 
-        // Combine all text for keyword matching
+        // Combine all text for keyword 个匹配
         const allText = `${name} ${description} ${topics.join(' ')}`;
 
-        // Create word boundary regex for more precise matching
+        // Create word boundary regex for more precise 个匹配
         const createWordRegex = (keyword) => {
             // Handle hyphenated keywords and special characters
             const escaped = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -1504,7 +1504,7 @@ class GitHubStarsGraph {
             .slice(0, 8);
 
         if (countEl) {
-            countEl.textContent = `${this.filteredRepositories.length.toLocaleString()} matching`;
+            countEl.textContent = `${this.filteredRepositories.length.toLocaleString()} 个匹配`;
         }
 
         container.innerHTML = topResults.map(repo => `
