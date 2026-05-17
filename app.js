@@ -74,7 +74,7 @@ class GitHubStarsGraph {
         };
         this.viewOptions = {
             showLabels: false,
-            showLinks: false
+            showLinks: true
         };
 
         this.init();
@@ -1612,7 +1612,7 @@ class GitHubStarsGraph {
             stars: 'all'
         };
         this.viewOptions.showLabels = false;
-        this.viewOptions.showLinks = false;
+        this.viewOptions.showLinks = true;
         
         // Reset UI elements
         const searchInput = document.getElementById('search');
