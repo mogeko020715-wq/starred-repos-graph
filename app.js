@@ -374,8 +374,15 @@ class GitHubStarsGraph {
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closeAllPanels();
+                this.hideDetailPanel();
             }
         });
+
+        // Detail panel close button
+        const detailClose = document.getElementById('detail-panel-close');
+        if (detailClose) {
+            detailClose.addEventListener('click', () => this.hideDetailPanel());
+        }
 
         // Search clear button
         const searchClear = document.getElementById('search-clear');
@@ -1156,9 +1163,9 @@ class GitHubStarsGraph {
             })
             .call(this.createDragHandler())
             .on('click', (event, d) => {
-                // On touch devices, first tap shows tooltip; second opens URL
+                event.stopPropagation();
                 if (this._isTouchDevice) return;
-                window.open(d.url, '_blank');
+                this.showDetailPanel(d);
             })
             .on('mouseover', (event, d) => {
                 this.showTooltip(event, d);
@@ -1178,20 +1185,16 @@ class GitHubStarsGraph {
                 this._isTouchDevice = true;
                 event.stopPropagation();
                 const touch = event.touches[0];
-
                 if (this._lastTappedNodeId === d.id) {
-                    // Second tap: open URL
-                    window.open(d.url, '_blank');
+                    this.showDetailPanel(d);
                     this._lastTappedNodeId = null;
                     this.hideTooltip();
                 } else {
-                    // First tap: show tooltip with tap-again hint
                     this._lastTappedNodeId = d.id;
                     this.showTooltip({ pageX: touch.pageX, pageY: touch.pageY }, d, true);
                     d3.select(event.target)
                         .attr('stroke-width', 4)
                         .attr('opacity', 1);
-                    // Auto-reset after 3s
                     clearTimeout(this._tapTimeout);
                     this._tapTimeout = setTimeout(() => {
                         if (this._lastTappedNodeId === d.id) {
@@ -1410,6 +1413,85 @@ class GitHubStarsGraph {
 
     hideTooltip() {
         this.tooltip.classed('visible', false);
+    }
+
+    showDetailPanel(d) {
+        const panel = document.getElementById('detail-panel');
+        const title = document.getElementById('detail-title');
+        const category = document.getElementById('detail-category');
+        const topics = document.getElementById('detail-topics');
+        const desc = document.getElementById('detail-desc');
+        const related = document.getElementById('detail-related');
+        
+        if (!panel) return;
+        
+        title.textContent = d.name || d.fullName || '未知';
+        
+        const cat = this.getRepoCategory(d);
+        const catMeta = this.categoryMeta[cat] || { label: '其他', color: '#7d7d8d' };
+        category.textContent = catMeta.label;
+        category.style.color = catMeta.color;
+        
+        topics.innerHTML = (d.topics || [])
+            .map(t => `<span class="detail-tag">${t}</span>`)
+            .join('') || '<span class="detail-tag">暂无标签</span>';
+        
+        desc.textContent = d.description || '暂无描述';
+        
+        // Find related nodes (share 2+ topics)
+        const relatedNodes = this.filteredRepositories.filter(other => {
+            if (other.id === d.id) return false;
+            const shared = (d.topics || []).filter(t => (other.topics || []).includes(t));
+            return shared.length >= 2;
+        }).slice(0, 8);
+        
+        if (relatedNodes.length > 0) {
+            related.innerHTML = relatedNodes.map(other => {
+                const otherCat = this.getRepoCategory(other);
+                const otherColor = (this.categoryMeta[otherCat] || {}).color || '#7d7d8d';
+                const sharedTopics = (d.topics || []).filter(t => (other.topics || []).includes(t));
+                return `
+                    <div class="detail-related-item" data-id="${other.id}">
+                        <span class="detail-related-dot" style="background:${otherColor}"></span>
+                        <span>${other.name || other.fullName || '未知'} · 共享 ${sharedTopics.length} 个主题</span>
+                    </div>
+                `;
+            }).join('');
+            
+            related.querySelectorAll('.detail-related-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const id = item.dataset.id;
+                    const node = this.filteredRepositories.find(n => n.id === id);
+                    if (node) this.showDetailPanel(node);
+                });
+            });
+        } else {
+            related.innerHTML = '<div style="color:#718096;font-size:13px;">暂无强关联节点（共享主题 ≥ 2）</div>';
+        }
+        
+        panel.classList.add('open');
+        panel.setAttribute('aria-hidden', 'false');
+        
+        // Create backdrop if not exists
+        let backdrop = document.getElementById('detail-backdrop');
+        if (!backdrop) {
+            backdrop = document.createElement('div');
+            backdrop.id = 'detail-backdrop';
+            backdrop.className = 'detail-backdrop';
+            document.body.appendChild(backdrop);
+            backdrop.addEventListener('click', () => this.hideDetailPanel());
+        }
+        backdrop.classList.add('visible');
+    }
+
+    hideDetailPanel() {
+        const panel = document.getElementById('detail-panel');
+        if (panel) {
+            panel.classList.remove('open');
+            panel.setAttribute('aria-hidden', 'true');
+        }
+        const backdrop = document.getElementById('detail-backdrop');
+        if (backdrop) backdrop.classList.remove('visible');
     }
     
     showEmptyState() {
