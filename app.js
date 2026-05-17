@@ -107,8 +107,6 @@ class GitHubStarsGraph {
             });
         }
         
-        });
-        
         // Window resize
         window.addEventListener('resize', () => {
             this.handleResize();
